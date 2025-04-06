@@ -994,15 +994,125 @@ corrplot(correlation_matrix, method = "circle")
 # Save this to an R Markdown file with YAML header:
 
 ---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malaria Surveillance Dashboard Example</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        
+        .dashboard-example {
+            margin: 30px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            padding: 15px;
+            margin: 15px 0;
+            white-space: pre;
+        }
+        
+        .yaml {
+            color: #8959A8;
+        }
+        
+        .r-chunk {
+            color: #4271AE;
+        }
+        
+        .header {
+            color: #3E999F;
+            font-weight: bold;
+        }
+        
+        .comment {
+            color: #969896;
+        }
+        
+        .function {
+            color: #4271AE;
+        }
+        
+        .package {
+            color: #C82829;
+        }
+        
+        .string {
+            color: #718C00;
+        }
+        
+        .operator {
+            color: #3E999F;
+        }
+        
+        .explanation {
+            background-color: #f0f7fb;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        
+        .key-feature {
+            background-color: #e8f4f8;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .note {
+            background-color: #fffbea;
+            border-left: 4px solid #f1c40f;
+            padding: 10px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Malaria Surveillance Dashboard Example</h1>
+    <p>Below is a complete example of an R Markdown file for creating an interactive dashboard to visualize malaria surveillance data using the flexdashboard package.</p>
+    
+    <div class="note">
+        <strong>Note:</strong> This code is meant to be saved as an R Markdown (.Rmd) file and rendered using RStudio or the rmarkdown package.
+    </div>
+    
+    <div class="dashboard-example">
+        <h2>Complete R Markdown Code</h2>
+        
+        <div class="code-block"><span class="yaml"># This is sample code for creating a flexdashboard
+# Save this to an R Markdown file with YAML header:
+
+---
 title: "Malaria Surveillance Dashboard"
 output: 
-   flexdashboard::flex_dashboard:
-     orientation: rows
-     social: menu
-     source_code: embed
----
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    social: menu
+    source_code: embed
+---</span>
 
-```{r setup, include=FALSE}
+<span class="r-chunk">```{r setup, include=FALSE}
 library(flexdashboard)
 library(tidyverse)
 library(plotly)
@@ -1010,34 +1120,34 @@ library(DT)
 
 # Load data
 malaria_surveillance <- read.csv("malaria_surveillance.csv")
-```
+```</span>
 
-Overview
-=====================================
+<span class="header">Overview
+=====================================</span>
 
-Row {data-height=150}
--------------------------------------
+<span class="header">Row {data-height=150}
+-------------------------------------</span>
 
-### Total Cases
-```{r}
+<span class="header">### Total Cases</span>
+<span class="r-chunk">```{r}
 valueBox(
   sum(malaria_surveillance$cases, na.rm = TRUE),
   icon = "fa-user-md",
   color = "primary"
 )
-```
+```</span>
 
-### Total Deaths
-```{r}
+<span class="header">### Total Deaths</span>
+<span class="r-chunk">```{r}
 valueBox(
   sum(malaria_surveillance$deaths, na.rm = TRUE),
   icon = "fa-heartbeat",
   color = "danger"
 )
-```
+```</span>
 
-### Average Case Fatality Rate
-```{r}
+<span class="header">### Average Case Fatality Rate</span>
+<span class="r-chunk">```{r}
 cfr <- sum(malaria_surveillance$deaths, na.rm = TRUE) / 
       sum(malaria_surveillance$cases, na.rm = TRUE) * 100
 
@@ -1046,13 +1156,13 @@ valueBox(
   icon = "fa-percent",
   color = "warning"
 )
-```
+```</span>
 
-Row
--------------------------------------
+<span class="header">Row
+-------------------------------------</span>
 
-### Malaria Cases Over Time
-```{r}
+<span class="header">### Malaria Cases Over Time</span>
+<span class="r-chunk">```{r}
 time_series <- malaria_surveillance %>%
   group_by(year, month) %>%
   summarize(total_cases = sum(cases, na.rm = TRUE), .groups = 'drop') %>%
@@ -1062,13 +1172,13 @@ plot_ly(time_series, x = ~date, y = ~total_cases, type = "scatter", mode = "line
   layout(title = "Malaria Cases Over Time",
          xaxis = list(title = "Date"),
          yaxis = list(title = "Total Cases"))
-```
+```</span>
 
-Row
--------------------------------------
+<span class="header">Row
+-------------------------------------</span>
 
-### Cases by District
-```{r}
+<span class="header">### Cases by District</span>
+<span class="r-chunk">```{r}
 district_data <- malaria_surveillance %>%
   group_by(district) %>%
   summarize(total_cases = sum(cases, na.rm = TRUE), .groups = 'drop') %>%
@@ -1078,13 +1188,13 @@ plot_ly(district_data, x = ~reorder(district, total_cases), y = ~total_cases, ty
   layout(title = "Total Cases by District",
          xaxis = list(title = "District"),
          yaxis = list(title = "Total Cases"))
-```
+```</span>
 
-District Details
-=====================================
+<span class="header">District Details
+=====================================</span>
 
-### District Comparison Table
-```{r}
+<span class="header">### District Comparison Table</span>
+<span class="r-chunk">```{r}
 district_summary <- malaria_surveillance %>%
   group_by(district) %>%
   summarize(
@@ -1100,13 +1210,13 @@ district_summary <- malaria_surveillance %>%
 datatable(district_summary, 
           options = list(pageLength = 10),
           rownames = FALSE)
-```
+```</span>
 
-Temporal Patterns
-=====================================
+<span class="header">Temporal Patterns
+=====================================</span>
 
-### Monthly Pattern
-```{r}
+<span class="header">### Monthly Pattern</span>
+<span class="r-chunk">```{r}
 monthly_pattern <- malaria_surveillance %>%
   group_by(month) %>%
   summarize(avg_cases = mean(cases, na.rm = TRUE), .groups = 'drop') %>%
@@ -1116,7 +1226,54 @@ plot_ly(monthly_pattern, x = ~month_name, y = ~avg_cases, type = "bar", marker =
   layout(title = "Average Cases by Month",
          xaxis = list(title = "Month", categoryorder = "array", categoryarray = month.name),
          yaxis = list(title = "Average Cases"))
-```
+```</span></div>
+    </div>
+    
+    <div class="explanation">
+        <h3>Dashboard Structure Explanation</h3>
+        <ul>
+            <li><strong>YAML Header</strong>: Configures the dashboard layout and settings</li>
+            <li><strong>Setup Chunk</strong>: Loads necessary libraries and data</li>
+            <li><strong>Dashboard Components</strong>:
+                <ul>
+                    <li><strong>Overview</strong>: Shows key metrics and time series</li>
+                    <li><strong>District Details</strong>: Provides detailed district-level data analysis</li>
+                    <li><strong>Temporal Patterns</strong>: Analyzes seasonal trends in malaria cases</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="key-feature">
+        <h3>Key Features of the Dashboard</h3>
+        <ul>
+            <li>Interactive visualizations with plotly</li>
+            <li>Sortable data tables using the DT package</li>
+            <li>Value boxes for displaying key metrics</li>
+            <li>Multiple tabs for organizing different aspects of the data</li>
+            <li>Responsive layout that adapts to different screen sizes</li>
+        </ul>
+    </div>
+    
+    <div class="note">
+        <h3>Prerequisites</h3>
+        <p>To run this dashboard, you'll need:</p>
+        <ol>
+            <li>R and RStudio installed</li>
+            <li>Required packages: flexdashboard, tidyverse, plotly, DT</li>
+            <li>A CSV file named "malaria_surveillance.csv" with columns for:
+                <ul>
+                    <li>district: District names</li>
+                    <li>year, month: Date information</li>
+                    <li>cases: Number of malaria cases</li>
+                    <li>deaths: Number of deaths</li>
+                    <li>population: Population of each district</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+</body>
+</html>
                 </code>
             </div>
             
