@@ -1001,121 +1001,122 @@ output:
      social: menu
      source_code: embed
 ---
- 
+
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(tidyverse)
 library(plotly)
 library(DT)
 
-#Load data
+# Load data
 malaria_surveillance <- read.csv("malaria_surveillance.csv")
 ```
 
 Overview
 =====================================
- 
-Row {data-height=150}
-# -------------------------------------
 
-# ### Total Cases
-# ```{r}
-# valueBox(
-#   sum(malaria_surveillance$cases, na.rm = TRUE),
-#   icon = "fa-user-md",
-#   color = "primary"
-# )
-# ```
-# 
-# ### Total Deaths
-# ```{r}
-# valueBox(
-#   sum(malaria_surveillance$deaths, na.rm = TRUE),
-#   icon = "fa-heartbeat",
-#   color = "danger"
-# )
-# ```
-# 
-# ### Average Case Fatality Rate
-# ```{r}
-# cfr <- sum(malaria_surveillance$deaths, na.rm = TRUE) / 
-#       sum(malaria_surveillance$cases, na.rm = TRUE) * 100
-# 
-# valueBox(
-#   paste0(round(cfr, 2), "%"),
-#   icon = "fa-percent",
-#   color = "warning"
-# )
-# ```
-# 
-# Row
-# -------------------------------------
-# 
-# ### Malaria Cases Over Time
-# ```{r}
-# time_series <- malaria_surveillance %>%
-#   group_by(year, month) %>%
-#   summarize(total_cases = sum(cases, na.rm = TRUE)) %>%
-#   mutate(date = as.Date(paste(year, month, "01", sep = "-")))
-# 
-# plot_ly(time_series, x = ~date, y = ~total_cases, type = "scatter", mode = "lines+markers") %>%
-#   layout(title = "Malaria Cases Over Time",
-#          xaxis = list(title = "Date"),
-#          yaxis = list(title = "Total Cases"))
-# ```
-# 
-# Row
-# -------------------------------------
-# 
-# ### Cases by District
-# ```{r}
-# district_data <- malaria_surveillance %>%
-#   group_by(district) %>%
-#   summarize(total_cases = sum(cases, na.rm = TRUE)) %>%
-#   arrange(desc(total_cases))
-# 
-# plot_ly(district_data, x = ~reorder(district, total_cases), y = ~total_cases, type = "bar", marker = list(color = "steelblue")) %>%
-#   layout(title = "Total Cases by District",
-#          xaxis = list(title = "District"),
-#          yaxis = list(title = "Total Cases"))
-# ```
-# 
-# District Details
-# =====================================
-# 
-# ### District Comparison Table
-# ```{r}
-# district_summary <- malaria_surveillance %>%
-#   group_by(district) %>%
-#   summarize(
-#     total_cases = sum(cases, na.rm = TRUE),
-#     total_deaths = sum(deaths, na.rm = TRUE),
-#     avg_population = mean(population, na.rm = TRUE),
-#     cfr = round((total_deaths / total_cases * 100), 2),
-#     incidence_per_1000 = round((total_cases / avg_population * 1000), 2)
-#   ) %>%
-#   arrange(desc(total_cases))
-# 
-# datatable(district_summary, 
-#           options = list(pageLength = 10),
-#           rownames = FALSE)
-# ```
-# 
-# Temporal Patterns
-# =====================================
-# 
-# ### Monthly Pattern
-# ```{r}
-# monthly_pattern <- malaria_surveillance %>%
-#   group_by(month) %>%
-#   summarize(avg_cases = mean(cases, na.rm = TRUE)) %>%
-#   mutate(month_name = month.name[month])
-# 
-# plot_ly(monthly_pattern, x = ~month_name, y = ~avg_cases, type = "bar", marker = list(color = "darkgreen")) %>%
-#   layout(title = "Average Cases by Month",
-#          xaxis = list(title = "Month"),
-#          yaxis = list(title = "Average Cases"))
-# ```
+Row {data-height=150}
+-------------------------------------
+
+### Total Cases
+```{r}
+valueBox(
+  sum(malaria_surveillance$cases, na.rm = TRUE),
+  icon = "fa-user-md",
+  color = "primary"
+)
+```
+
+### Total Deaths
+```{r}
+valueBox(
+  sum(malaria_surveillance$deaths, na.rm = TRUE),
+  icon = "fa-heartbeat",
+  color = "danger"
+)
+```
+
+### Average Case Fatality Rate
+```{r}
+cfr <- sum(malaria_surveillance$deaths, na.rm = TRUE) / 
+      sum(malaria_surveillance$cases, na.rm = TRUE) * 100
+
+valueBox(
+  paste0(round(cfr, 2), "%"),
+  icon = "fa-percent",
+  color = "warning"
+)
+```
+
+Row
+-------------------------------------
+
+### Malaria Cases Over Time
+```{r}
+time_series <- malaria_surveillance %>%
+  group_by(year, month) %>%
+  summarize(total_cases = sum(cases, na.rm = TRUE), .groups = 'drop') %>%
+  mutate(date = as.Date(paste(year, month, "01", sep = "-")))
+
+plot_ly(time_series, x = ~date, y = ~total_cases, type = "scatter", mode = "lines+markers") %>%
+  layout(title = "Malaria Cases Over Time",
+         xaxis = list(title = "Date"),
+         yaxis = list(title = "Total Cases"))
+```
+
+Row
+-------------------------------------
+
+### Cases by District
+```{r}
+district_data <- malaria_surveillance %>%
+  group_by(district) %>%
+  summarize(total_cases = sum(cases, na.rm = TRUE), .groups = 'drop') %>%
+  arrange(desc(total_cases))
+
+plot_ly(district_data, x = ~reorder(district, total_cases), y = ~total_cases, type = "bar", marker = list(color = "steelblue")) %>%
+  layout(title = "Total Cases by District",
+         xaxis = list(title = "District"),
+         yaxis = list(title = "Total Cases"))
+```
+
+District Details
+=====================================
+
+### District Comparison Table
+```{r}
+district_summary <- malaria_surveillance %>%
+  group_by(district) %>%
+  summarize(
+    total_cases = sum(cases, na.rm = TRUE),
+    total_deaths = sum(deaths, na.rm = TRUE),
+    avg_population = mean(population, na.rm = TRUE),
+    cfr = round((total_deaths / total_cases * 100), 2),
+    incidence_per_1000 = round((total_cases / avg_population * 1000), 2),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(total_cases))
+
+datatable(district_summary, 
+          options = list(pageLength = 10),
+          rownames = FALSE)
+```
+
+Temporal Patterns
+=====================================
+
+### Monthly Pattern
+```{r}
+monthly_pattern <- malaria_surveillance %>%
+  group_by(month) %>%
+  summarize(avg_cases = mean(cases, na.rm = TRUE), .groups = 'drop') %>%
+  mutate(month_name = month.name[month])
+
+plot_ly(monthly_pattern, x = ~month_name, y = ~avg_cases, type = "bar", marker = list(color = "darkgreen")) %>%
+  layout(title = "Average Cases by Month",
+         xaxis = list(title = "Month", categoryorder = "array", categoryarray = month.name),
+         yaxis = list(title = "Average Cases"))
+```
                 </code>
             </div>
             
