@@ -993,31 +993,31 @@ corrplot(correlation_matrix, method = "circle")
 # This is sample code for creating a flexdashboard
 # Save this to an R Markdown file with YAML header:
 
-# ---
-# title: "Malaria Surveillance Dashboard"
-# output: 
-#   flexdashboard::flex_dashboard:
-#     orientation: rows
-#     social: menu
-#     source_code: embed
-# ---
-# 
-# ```{r setup, include=FALSE}
-# library(flexdashboard)
-# library(tidyverse)
-# library(plotly)
-# library(DT)
-# 
-# # Load data
-# malaria_surveillance <- read.csv("malaria_surveillance.csv")
-# ```
-# 
-# Overview
-# =====================================
-# 
-# Row {data-height=150}
+---
+title: "Malaria Surveillance Dashboard"
+output: 
+   flexdashboard::flex_dashboard:
+     orientation: rows
+     social: menu
+     source_code: embed
+---
+ 
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(DT)
+
+#Load data
+malaria_surveillance <- read.csv("malaria_surveillance.csv")
+```
+
+Overview
+=====================================
+ 
+Row {data-height=150}
 # -------------------------------------
-# 
+
 # ### Total Cases
 # ```{r}
 # valueBox(
