@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 3: Exploratory Data Analysis (EDA) & Visualization for Malaria Data</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button class="sidebar-toggle" id="sidebar-toggle">Menu</button>
+    
+    <div class="sidebar" id="sidebar">
+        <h3>Course Navigation</h3>
+        <ul>
+            <li class="menu-item">
+                <a href="#week3">📅 Week 3: EDA & Visualization</a>
+                <ul class="sub-menu">
+                    <li><a href="#stats">Descriptive Statistics</a></li>
+                    <li><a href="#missing">Handling Missing Values</a></li>
+                    <li><a href="#viz">Data Visualization with ggplot2</a></li>
+                    <li><a href="#advanced">Advanced Visualization</a></li>
+                </ul>
+            </li>
+            <li class="menu-item">
+                <a href="#exercises3">📌 Week 3: Exercises</a>
+                <ul class="sub-menu">
+                    <li><a href="#ex-stats">Statistics Exercises</a></li>
+                    <li><a href="#ex-missing">Missing Values Exercises</a></li>
+                    <li><a href="#ex-viz">Visualization Exercises</a></li>
+                    <li><a href="#ex-bonus3">Dashboard Challenge</a></li>
+                </ul>
+            </li>
+            <li class="menu-item">
+                <a href="#solutions3">📌 Week 3: Solutions</a>
+                <ul class="sub-menu">
+                    <li><a href="#sol-stats">Statistics Solutions</a></li>
+                    <li><a href="#sol-missing">Missing Values Solutions</a></li>
+                    <li><a href="#sol-viz">Visualization Solutions</a></li>
+                    <li><a href="#sol-bonus3">Dashboard Solution</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="container">
+        <h1 id="week3">📅 Week 3: Exploratory Data Analysis (EDA) & Visualization for Malaria Data</h1>
+        
+        <p>This week, we will:<br>
+        ✅ <strong>Master descriptive statistics & summary tables</strong> for malaria datasets<br>
+        ✅ <strong>Learn to handle missing values</strong> with <code>na.omit()</code> and <code>tidyr::replace_na()</code><br>
+        ✅ <strong>Create effective visualizations with <code>ggplot2</code></strong> for malaria data analysis</p>
+        
+        <hr>
+        
+        <h2 id="stats">1️⃣ Descriptive Statistics & Summary Tables</h2>
+        
+        <h3>What is Exploratory Data Analysis (EDA)?</h3>
+        <p>📌 <strong>EDA</strong> is the process of analyzing data sets to summarize their main characteristics, often using visual methods. It's a critical first step before building complex models.</p>
+        
+        <h3>Step 1: Basic Summary Statistics</h3>
+        <div class="r-code">
+            <code>
+# Load our malaria dataset<br>
+malaria_data <- read.csv("malaria_dataset.csv")<br>
+<br>
+# Generate basic summary statistics<br>
+summary_stats <- summary(malaria_data)<br>
+print(summary_stats)
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>summary()</code> provides basic statistics for each column: min, max, mean, median, and quartiles<br>
+            ✔ For categorical variables, it shows counts of each level</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 2: Group-wise Statistics</h3>
+        <div class="r-code">
+            <code>
+# Load dplyr for data manipulation<br>
+library(dplyr)<br>
+<br>
+# Calculate mean malaria cases by region<br>
+region_stats <- malaria_data %>%<br>
+  group_by(region) %>%<br>
+  summarize(<br>
+    mean_cases = mean(cases, na.rm = TRUE),<br>
+    median_cases = median(cases, na.rm = TRUE),<br>
+    min_cases = min(cases, na.rm = TRUE),<br>
+    max_cases = max(cases, na.rm = TRUE)<br>
+  )
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>group_by()</code> allows us to perform operations by group (e.g., region)<br>
+            ✔ <code>summarize()</code> computes summary statistics for each group<br>
+            ✔ <code>na.rm = TRUE</code> ensures we ignore missing values in our calculations</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 3: Frequency Tables</h3>
+        <div class="r-code">
+            <code>
+# Create frequency table for severity levels<br>
+severity_table <- table(malaria_data$severity)<br>
+print(severity_table)<br>
+<br>
+# Calculate proportion table<br>
+severity_prop <- prop.table(severity_table) * 100<br>
+print(severity_prop)
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>table()</code> counts occurrences of each category in a variable<br>
+            ✔ <code>prop.table()</code> converts counts to proportions (multiplied by 100 for percentages)</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 4: Cross-tabulation</h3>
+        <div class="r-code">
+            <code>
+# Create cross-tabulation of region and severity<br>
+region_severity_table <- table(malaria_data$region, malaria_data$severity)<br>
+print(region_severity_table)<br>
+<br>
+# Calculate chi-square test for association<br>
+chisq_test <- chisq.test(region_severity_table)<br>
+print(chisq_test)
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ Cross-tabulation shows the relationship between two categorical variables<br>
+            ✔ <code>chisq.test()</code> tests whether there's a significant association between region and severity</p>
+        </div>
+        
+        <hr>
+        
+        <h2 id="missing">2️⃣ Handling Missing Values in Malaria Data</h2>
+        
+        <h3>Step 1: Identifying Missing Values</h3>
+        <div class="r-code">
+            <code>
+# Check for missing values in the dataset<br>
+missing_values <- colSums(is.na(malaria_data))<br>
+print(missing_values)<br>
+<br>
+# Calculate the percentage of missing values<br>
+missing_percentage <- colMeans(is.na(malaria_data)) * 100<br>
+print(missing_percentage)
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>is.na()</code> identifies missing values in the dataset<br>
+            ✔ <code>colSums()</code> sums the missing values in each column<br>
+            ✔ <code>colMeans()</code> calculates the proportion of missing values in each column</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 2: Removing Rows with Missing Values</h3>
+        <div class="r-code">
+            <code>
+# Remove rows with any missing values<br>
+complete_data <- na.omit(malaria_data)<br>
+<br>
+# Check how many rows were removed<br>
+original_rows <- nrow(malaria_data)<br>
+complete_rows <- nrow(complete_data)<br>
+removed_rows <- original_rows - complete_rows<br>
+print(paste("Removed", removed_rows, "rows with missing data"))
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>na.omit()</code> removes any row that contains at least one missing value<br>
+            ✔ This is a simple approach but may remove too much data if missing values are common</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 3: Replacing Missing Values with tidyr</h3>
+        <div class="r-code">
+            <code>
+# Load tidyr package<br>
+library(tidyr)<br>
+<br>
+# Replace missing values in 'cases' with the mean<br>
+malaria_data_imputed <- malaria_data %>%<br>
+  mutate(cases = replace_na(cases, mean(cases, na.rm = TRUE)))<br>
+<br>
+# Replace missing values in 'severity' with "Unknown"<br>
+malaria_data_imputed <- malaria_data_imputed %>%<br>
+  mutate(severity = replace_na(severity, "Unknown"))
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>tidyr::replace_na()</code> replaces NA values with specified replacements<br>
+            ✔ For numeric columns, we often replace with mean, median, or zero<br>
+            ✔ For categorical columns, we may replace with a new category like "Unknown"</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 4: Missing Value Visualization</h3>
+        <div class="r-code">
+            <code>
+# Install and load packages for missing data visualization<br>
+install.packages("naniar")<br>
+library(naniar)<br>
+<br>
+# Create a visualization of missing data patterns<br>
+gg_miss_var(malaria_data)<br>
+<br>
+# Create a matrix of missing data patterns<br>
+vis_miss(malaria_data)
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>naniar</code> package provides specialized tools for exploring missing data<br>
+            ✔ <code>gg_miss_var()</code> creates a plot showing the count of missing values by variable<br>
+            ✔ <code>vis_miss()</code> creates a matrix visualization of missing values throughout the dataset</p>
+        </div>
+        
+        <hr>
+        
+        <h2 id="viz">3️⃣ Data Visualization with ggplot2 for Malaria Analysis</h2>
+        
+        <h3>Step 1: Installing and Loading ggplot2</h3>
+        <div class="r-code">
+            <code>
+# Install and load ggplot2<br>
+install.packages("ggplot2")<br>
+library(ggplot2)
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>ggplot2</code> is a powerful visualization package based on the Grammar of Graphics<br>
+            ✔ It creates visualizations by layering components (data, aesthetics, geometries)</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 2: Creating Histograms</h3>
+        <div class="r-code">
+            <code>
+# Create a histogram of malaria cases<br>
+ggplot(malaria_data, aes(x = cases)) +<br>
+  geom_histogram(binwidth = 50, fill = "steelblue", color = "white") +<br>
+  labs(<br>
+    title = "Distribution of Malaria Cases",<br>
+    x = "Number of Cases",<br>
+    y = "Frequency"<br>
+  ) +<br>
+  theme_minimal()
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>ggplot()</code> initializes the plot with data and aesthetic mappings<br>
+            ✔ <code>geom_histogram()</code> adds a histogram layer with specified bin width<br>
+            ✔ <code>labs()</code> adds titles and labels<br>
+            ✔ <code>theme_minimal()</code> applies a clean, minimal theme</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 3: Creating Boxplots</h3>
+        <div class="r-code">
+            <code>
+# Create boxplots of cases by region<br>
+ggplot(malaria_data, aes(x = region, y = cases, fill = region)) +<br>
+  geom_boxplot() +<br>
+  labs(<br>
+    title = "Malaria Cases by Region",<br>
+    x = "Region",<br>
+    y = "Number of Cases"<br>
+  ) +<br>
+  theme_minimal() +<br>
+  theme(legend.position = "none") # Remove legend as it's redundant
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>geom_boxplot()</code> creates boxplots showing the distribution within each group<br>
+            ✔ The boxplot shows median, quartiles, and outliers<br>
+            ✔ <code>fill = region</code> colors each boxplot by region</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 4: Creating Bar Charts</h3>
+        <div class="r-code">
+            <code>
+# Create a bar chart of average cases by region<br>
+region_avg <- malaria_data %>%<br>
+  group_by(region) %>%<br>
+  summarize(avg_cases = mean(cases, na.rm = TRUE))<br>
+<br>
+ggplot(region_avg, aes(x = region, y = avg_cases, fill = region)) +<br>
+  geom_col() +<br>
+  labs(<br>
+    title = "Average Malaria Cases by Region",<br>
+    x = "Region",<br>
+    y = "Average Number of Cases"<br>
+  ) +<br>
+  theme_minimal() +<br>
+  theme(legend.position = "none")
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>geom_col()</code> creates bars with heights proportional to values<br>
+            ✔ First we aggregate the data, then visualize the aggregated stats</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 5: Time Series Line Plots</h3>
+        <div class="r-code">
+            <code>
+# Create a time series plot of malaria cases<br>
+ggplot(malaria_data, aes(x = date, y = cases)) +<br>
+  geom_line(color = "darkred") +<br>
+  geom_point(color = "darkred") +<br>
+  labs(<br>
+    title = "Malaria Cases Over Time",<br>
+    x = "Date",<br>
+    y = "Number of Cases"<br>
+  ) +<br>
+  theme_minimal() +<br>
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y")
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>geom_line()</code> connects points with lines to show trends over time<br>
+            ✔ <code>geom_point()</code> adds points at each observation<br>
+            ✔ <code>scale_x_date()</code> formats the x-axis for date data</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 6: Faceted Plots</h3>
+        <div class="r-code">
+            <code>
+# Create faceted plots by region<br>
+ggplot(malaria_data, aes(x = date, y = cases)) +<br>
+  geom_line() +<br>
+  geom_point() +<br>
+  facet_wrap(~region, scales = "free_y") +<br>
+  labs(<br>
+    title = "Malaria Cases Over Time by Region",<br>
+    x = "Date",<br>
+    y = "Number of Cases"<br>
+  ) +<br>
+  theme_minimal() +<br>
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>facet_wrap()</code> creates separate panels for each region<br>
+            ✔ <code>scales = "free_y"</code> allows each panel to have its own y-axis scale<br>
+            ✔ The angled x-axis text improves readability when dates are displayed</p>
+        </div>
+        
+        <hr>
+        
+        <h3 id="advanced">Step 7: Advanced Visualization with Interactive Elements</h3>
+        <div class="r-code">
+            <code>
+# Install and load packages for interactive plots<br>
+install.packages("plotly")<br>
+library(plotly)<br>
+<br>
+# Convert ggplot to interactive plot with plotly<br>
+cases_by_district <- ggplot(district_totals, aes(x = reorder(district, -total_cases), 
+                                               y = total_cases,
+                                               text = paste("District:", district, 
+                                                           "<br>Cases:", total_cases))) +<br>
+  geom_col(fill = "steelblue") +<br>
+  labs(title = "Total Malaria Cases by District", x = "District", y = "Total Cases") +<br>
+  theme_minimal() +<br>
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))<br>
+<br>
+# Convert to interactive plot<br>
+interactive_plot <- ggplotly(cases_by_district, tooltip = "text")<br>
+interactive_plot
+            </code>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>plotly</code> converts static ggplot2 visualizations to interactive plots<br>
+            ✔ Interactive elements include tooltips, zooming, and panning<br>
+            ✔ The <code>tooltip</code> parameter controls what information appears when hovering</p>
+        </div>
+        
+        <hr>
+        
+        <h2>✅ Summary of Week 3</h2>
+        <p>By the end of this week, you should:<br>
+        ✔ <strong>Know how to generate descriptive statistics</strong> for malaria data<br>
+        ✔ <strong>Understand methods for handling missing values</strong> in datasets<br>
+        ✔ <strong>Be able to create effective visualizations</strong> using ggplot2<br>
+        ✔ <strong>Interpret visual patterns</strong> to identify trends in malaria data</p>
+        
+        <hr>
+        
+        <h1 id="exercises3">📌 Week 3: Exercises – Exploratory Data Analysis & Visualization for Malaria Data</h1>
+        
+        <p>This week's exercises will focus on applying descriptive statistics, handling missing values, and creating insightful visualizations of malaria data. These skills are critical for understanding your data before proceeding to more complex analyses.</p>
+        
+        <hr>
+        
+        <div class="exercise-section">
+            <h2 id="ex-stats">1️⃣ Descriptive Statistics & Summary Tables</h2>
+            
+            <h3>Exercise 1.1: Basic Summary Statistics</h3>
+            <p>🔹 <strong>You have a dataset called <code>malaria_surveillance</code> with the following columns:</strong><br>
+            - <code>district</code>: Name of the district<br>
+            - <code>month</code>: Month of data collection (1-12)<br>
+            - <code>year</code>: Year of data collection<br>
+            - <code>cases</code>: Number of reported malaria cases<br>
+            - <code>deaths</code>: Number of malaria-related deaths<br>
+            - <code>population</code>: Population of the district</p>
+            
+            <p><strong>Write the R code to:</strong></p>
+            <ol>
+                <li>Load the dataset and display its structure using <code>str()</code>.</li>
+                <li>Calculate summary statistics for all numeric variables.</li>
+                <li>Find the district with the highest number of cases.</li>
+                <li>Calculate the case fatality rate (deaths/cases) for each district.</li>
+            </ol>
+            
+            <hr>
+            
+            <h3>Exercise 1.2: Group-wise Statistics</h3>
+            <p>🔹 <strong>Using the same dataset, analyze malaria statistics by district and year.</strong></p>
+            
+            <p><strong>Write the R code to:</strong></p>
+            <ol>
+                <li>Calculate the average number of cases per year for each district.</li>
+                <li>Identify the year with the highest total number of cases across all districts.</li>
+                <li>Calculate the incidence rate (cases per 1000 population) for each district-year combination.</li>
+                <li>Create a summary table showing the top 5 district-year combinations with the highest incidence rates.</li>
+            </ol>
+            
+            <hr>
+            
+            <h3>Exercise 1.3: Statistical Tests</h3>
+            <p>🔹 <strong>Perform statistical comparisons between different groups in the dataset.</strong></p>
+            
+            <p><strong>Write the R code to:</strong></p>
+            <ol>
+                <li>Test whether there is a significant difference in mean cases between districts using ANOVA.</li>
+                <li>Perform a t-test to compare cases between two specific districts of your choice.</li>
+                <li>Check if there's a correlation between population size and number of cases using Pearson's correlation.</li>
+            </ol>
+            
+        </div>
+        
+        <div class="exercise-section">
+            <h2 id="ex-missing">2️⃣ Handling Missing Values</h2>
+            
+            <h3>Exercise 2.1: Identify Missing Data</h3>
+            <p>🔹 <strong>The <code>malaria_surveillance</code> dataset has some missing values in the <code>cases</code> and <code>deaths</code> columns.</strong></p>
+            
+            <p><strong>Write the R code to:</strong></p>
+            <ol>
+                <li>Count how many values are missing in each column.</li>
+                <li>Calculate the percentage of missing values in each column.</li>
+                <li>Identify districts with the most missing values.</li>
+            </ol>
+            
+            <hr>
+            
+            <h3>Exercise 2.2: Handle Missing Values</h3>
+            <p>🔹 <strong>Apply different strategies to handle missing data in the dataset.</strong></p>
+            
+            <p><strong>Write the R code to:</strong></p>
+            <ol>
+                <li>Create a new dataset with complete cases only (no missing values).</li>
+                <li>Create another dataset where missing <code>cases</code> values are replaced with the mean of the district.</li>
+                <li>For missing <code>deaths</code> values, replace with 0 and create a new flag column called <code>deaths_imputed</code> that is TRUE when the value was imputed.</li>
+            </ol>
+            
+            <hr>
+            
+            <h3>Exercise 2.3: Missing Data Visualization</h3>
+            <p>🔹 <strong>Visualize the patterns of missing data in the dataset.</strong></p>
+            
+            <p><strong>Write the R code to:</strong></p>
+            <ol>
+                <li>Create a visualization showing the proportion of missing values in each column.</li>
+                <li>Visualize how missing values are distributed across districts.</li>
+                <li>Create a heatmap showing where missing values occur in the dataset.</li>
+            </ol>
+            
+        </div>
+        
+        <div class="exercise-section">
+            <h2 id="ex-viz">3️⃣ Data Visualization with ggplot2</h2>
+            
+            <h3>Exercise 3.1: Temporal Trends</h3>
+            <p>🔹 <strong>Visualize how malaria cases change over time.</strong></p>
+            
+            <p><strong>Write the R code to:</strong></p>
+            <ol>
+                <li>Create a line plot showing the total cases per month across all years.</li>
+                <li>Make a faceted plot showing yearly trends, with one panel per year.</li>
+                <li>Create a heatmap where x-axis is month, y-axis is year, and color represents number of cases.</li>
+            </ol>
+            
+            <hr>
+            
+            <h3>Exercise 3.2: Spatial Comparison</h3>
+            <p>🔹 <strong>Compare malaria statistics across different districts.</strong></p>
+            
+            <p><strong>Write the R code to:</strong></p>
+            <ol>
+                <li>Create a bar chart showing the total cases by district in descending order.</li>
+                <li>Make boxplots comparing the distribution of monthly cases across districts.</li>
+                <li>Create a scatter plot with population on the x-axis and average cases on the y-axis, with points colored by district.</li>
+            </ol>
+            
+            <hr>
+            
+            <h3>Exercise 3.3: Relationship Visualization</h3>
+            <p>🔹 <strong>Explore relationships between variables in the dataset.</strong></p>
+            
+            <p><strong>Write the R code to:</strong></p>
+            <ol>
+                <li>Create a scatter plot showing the relationship between cases and deaths, with a trend line.</li>
+                <li>Make a bubble chart where x-axis is population, y-axis is cases, and bubble size represents deaths.</li>
+                <li>Create a correlation plot showing relationships between all numeric variables.</li>
+            </ol>
+            
+        </div>
+        
+        <div class="exercise-section">
+            <h2 id="ex-bonus3">4️⃣ Bonus Challenge: Dashboard Creation</h2>
+            
+            <p>🔹 <strong>Create a simple dashboard using R Markdown and flexdashboard to display key malaria statistics and visualizations.</strong></p>
+            
+            <p><strong>Write the R code to:</strong></p>
+            <ol>
+                <li>Create a flexdashboard with at least 3 panels.</li>
+                <li>Include summary statistics, a time series plot, and a comparison across districts.</li>
+                <li>Add interactive elements with plotly (if you're familiar with it).</li>
+                <li>Make the dashboard self-contained so it can be shared with others.</li>
+            </ol>
+            
+            <p>📌 <strong>Hint:</strong> Use <code>install.packages("flexdashboard")</code> and check the flexdashboard documentation for templates.</p>
+            
+        </div>
+        
+        <hr>
+        
+        <h1 id="solutions3">📌 Week 3: Solutions – Exploratory Data Analysis & Visualization for Malaria Data</h1>
+        
+        <p>Here are the <strong>solutions</strong> for Week 3 exercises:</p>
+        
+        <hr>
+        
+        <div class="solution-section">
+            <h2 id="sol-stats">1️⃣ Descriptive Statistics & Summary Tables</h2>
+            
+            <h3>Exercise 1.1: Basic Summary Statistics</h3>
+            <div class="r-code">
+                <code>
+# Load the dataset<br>
+malaria_surveillance <- read.csv("malaria_surveillance.csv")<br>
+<br>
+# Display the structure of the dataset<br>
+str(malaria_surveillance)<br>
+<br>
+# Calculate summary statistics for all numeric variables<br>
+summary(malaria_surveillance[, c("cases", "deaths", "population")])<br>
+<br>
+# Find the district with the highest number of cases<br>
+max_cases_district <- malaria_surveillance[which.max(malaria_surveillance$cases), "district"]<br>
+max_cases <- max(malaria_surveillance$cases, na.rm = TRUE)<br>
+cat("District with highest cases:", max_cases_district, "with", max_cases, "cases\n")<br>
+<br>
+# Calculate the case fatality rate for each district<br>
+library(dplyr)<br>
+cfr_by_district <- malaria_surveillance %>%<br>
+  group_by(district) %>%<br>
+  summarize(<br>
+    total_cases = sum(cases, na.rm = TRUE),<br>
+    total_deaths = sum(deaths, na.rm = TRUE),<br>
+    cfr = (total_deaths / total_cases) * 100<br>
+  ) %>%<br>
+  arrange(desc(cfr))<br>
+<br>
+print(cfr_by_district)
+                </code>
+            </div>
+            
+            <div class="explanation">
+                <h4>Explanation:</h4>
+                <p>- <code>str()</code> shows the structure of the dataset including variable types.<br>
+                - <code>summary()</code> provides basic statistics for the selected numeric columns.<br>
+                - <code>which.max()</code> finds the row with the maximum value in the cases column.<br>
+                - We calculate the case fatality rate (CFR) as (deaths/cases)*100 for each district.</p>
+            </div>
+            
+            <hr>
+            
+            <h3>Exercise 1.2: Group-wise Statistics</h3>
+            <div class="r-code">
+                <code>
+# Calculate average cases per year for each district<br>
+avg_cases_by_district_year <- malaria_surveillance %>%<br>
+  group_by(district, year) %>%<br>
+  summarize(avg_cases = mean(cases, na.rm = TRUE)) %>%<br>
+  arrange(district, year)<br>
+<br>
+print(avg_cases_by_district_year)<br>
+<br>
+# Identify the year with highest total cases<br>
+yearly_totals <- malaria_surveillance %>%<br>
+  group_by(year) %>%<br>
+  summarize(total_cases = sum(cases, na.rm = TRUE)) %>%<br>
+  arrange(desc(total_cases))<br>
+<br>
+cat("Year with highest total cases:", yearly_totals$year[1], 
+    "with", yearly_totals$total_cases[1], "cases\n")<br>
+<br>
+# Calculate incidence rate per 1000 population<br>
+incidence_by_district_year <- malaria_surveillance %>%<br>
+  group_by(district, year) %>%<br>
+  summarize(<br>
+    total_cases = sum(cases, na.rm = TRUE),<br>
+    avg_population = mean(population, na.rm = TRUE),<br>
+    incidence_per_1000 = (total_cases / avg_population) * 1000<br>
+  ) %>%<br>
+  arrange(desc(incidence_per_1000))<br>
+<br>
+# Top 5 district-year combinations with highest incidence<br>
+top_5_incidence <- head(incidence_by_district_year, 5)<br>
+print(top_5_incidence)
+                </code>
+            </div>
+            
+            <div class="explanation">
+                <h4>Explanation:</h4>
+                <p>- We group the data by district and year to calculate average cases.<br>
+                - For yearly totals, we group only by year and sum all cases.<br>
+                - Incidence rate is calculated as (cases/population)*1000 for standardization.<br>
+                - <code>head()</code> selects the top 5 rows after sorting by incidence rate.</p>
+            </div>
+            
+            <hr>
+            
+            <h3>Exercise 1.3: Statistical Tests</h3>
+            <div class="r-code">
+                <code>
+# ANOVA to test for difference in mean cases between districts<br>
+cases_anova <- aov(cases ~ district, data = malaria_surveillance)<br>
+summary(cases_anova)<br>
+<br>
+# T-test to compare cases between two specific districts<br>
+district_a <- "Central"  # Replace with actual district name<br>
+district_b <- "Eastern"  # Replace with actual district name<br>
+<br>
+t_test_result <- t.test(<br>
+  malaria_surveillance$cases[malaria_surveillance$district == district_a],<br>
+  malaria_surveillance$cases[malaria_surveillance$district == district_b]<br>
+)<br>
+print(t_test_result)<br>
+<br>
+# Check correlation between population size and number of cases<br>
+correlation <- cor.test(<br>
+  malaria_surveillance$population, <br>
+  malaria_surveillance$cases,<br>
+  method = "pearson"<br>
+)<br>
+print(correlation)
+                </code>
+            </div>
+            
+            <div class="explanation">
+                <h4>Explanation:</h4>
+                <p>- ANOVA tests whether there are significant differences in means across multiple groups.<br>
+                - The t-test compares means between two specific groups.<br>
+                - Pearson's correlation measures the linear relationship between population and cases.</p>
+            </div>
+        </div>
+        
+        <div class="solution-section">
+            <h2 id="sol-missing">2️⃣ Handling Missing Values</h2>
+            
+            <h3>Exercise 2.1: Identify Missing Data</h3>
+            <div class="r-code">
+                <code>
+# Count missing values in each column<br>
+missing_count <- colSums(is.na(malaria_surveillance))<br>
+print(missing_count)<br>
+<br>
+# Calculate percentage of missing values<br>
+missing_percentage <- colMeans(is.na(malaria_surveillance)) * 100<br>
+print(missing_percentage)<br>
+<br>
+# Identify districts with most missing values<br>
+missing_by_district <- malaria_surveillance %>%<br>
+  group_by(district) %>%<br>
+  summarize(<br>
+    missing_cases = sum(is.na(cases)),<br>
+    missing_deaths = sum(is.na(deaths)),<br>
+    total_missing = missing_cases + missing_deaths<br>
+  ) %>%<br>
+  arrange(desc(total_missing))<br>
+<br>
+print(missing_by_district)
+                </code>
+            </div>
+            
+            <div class="explanation">
+                <h4>Explanation:</h4>
+                <p>- <code>colSums(is.na())</code> counts missing values in each column.<br>
+                - <code>colMeans(is.na()) * 100</code> calculates the percentage of missing values.<br>
+                - We group by district to identify which districts have the most missing data.</p>
+            </div>
+            
+            <hr>
+            
+            <h3>Exercise 2.2: Handle Missing Values</h3>
+            <div class="r-code">
+                <code>
+# Dataset with complete cases only<br>
+complete_data <- na.omit(malaria_surveillance)<br>
+cat("Original rows:", nrow(malaria_surveillance), 
+    "Complete rows:", nrow(complete_data), 
+    "Removed:", nrow(malaria_surveillance) - nrow(complete_data), "\n")<br>
+<br>
+# Replace missing cases with district mean<br>
+imputed_cases <- malaria_surveillance %>%<br>
+  group_by(district) %>%<br>
+  mutate(cases = ifelse(is.na(cases), 
+                         mean(cases, na.rm = TRUE), 
+                         cases))<br>
+<br>
+# Replace missing deaths with 0 and create flag<br>
+imputed_deaths <- malaria_surveillance %>%<br>
+  mutate(<br>
+    deaths_imputed = is.na(deaths),<br>
+    deaths = ifelse(is.na(deaths), 0, deaths)<br>
+  )<br>
+<br>
+# Check the results<br>
+summary(imputed_cases$cases)<br>
+summary(imputed_deaths$deaths)<br>
+table(imputed_deaths$deaths_imputed)
+                </code>
+            </div>
+            
+            <div class="explanation">
+                <h4>Explanation:</h4>
+                <p>- <code>na.omit()</code> removes rows with any missing values.<br>
+                - For imputing missing cases, we use the mean of each district.<br>
+                - For missing deaths, we replace with 0 and create a flag to track which values were imputed.</p>
+            </div>
+            
+            <hr>
+            
+            <h3>Exercise 2.3: Missing Data Visualization</h3>
+            <div class="r-code">
+                <code>
+# Visualize proportion of missing values by column<br>
+library(naniar)  # Install if needed: install.packages("naniar")<br>
+<br>
+gg_miss_var(malaria_surveillance)<br>
+<br>
+# Visualize missing values by district<br>
+gg_miss_var(malaria_surveillance, facet = district)<br>
+<br>
+# Create a heatmap of missing values<br>
+vis_miss(malaria_surveillance)
+                </code>
+            </div>
+            
+            <div class="explanation">
+                <h4>Explanation:</h4>
+                <p>- <code>gg_miss_var()</code> creates a bar chart showing missing values by variable.<br>
+                - By adding <code>facet = district</code>, we can see missing value patterns by district.<br>
+                - <code>vis_miss()</code> creates a heatmap where cells are colored by whether they are missing or not.</p>
+            </div>
+        </div>
+        
+        <div class="solution-section">
+            <h2 id="sol-viz">3️⃣ Data Visualization with ggplot2</h2>
+            
+            <h3>Exercise 3.1: Temporal Trends</h3>
+            <div class="r-code">
+                <code>
+library(ggplot2)<br>
+library(lubridate)<br>
+<br>
+# Create a date variable for proper time series plotting<br>
+malaria_surveillance <- malaria_surveillance %>%<br>
+  mutate(date = make_date(year, month, 1))<br>
+<br>
+# Line plot showing total cases per month across all years<br>
+monthly_cases <- malaria_surveillance %>%<br>
+  group_by(month) %>%<br>
+  summarize(total_cases = sum(cases, na.rm = TRUE))<br>
+<br>
+ggplot(monthly_cases, aes(x = month, y = total_cases, group = 1)) +<br>
+  geom_line() +<br>
+  geom_point() +<br>
+  scale_x_continuous(breaks = 1:12) +<br>
+  labs(<br>
+    title = "Total Malaria Cases by Month",<br>
+    x = "Month",<br>
+    y = "Total Cases"<br>
+  ) +<br>
+  theme_minimal()<br>
+<br>
+# Faceted plot showing yearly trends<br>
+yearly_trends <- malaria_surveillance %>%<br>
+  group_by(year, month) %>%<br>
+  summarize(total_cases = sum(cases, na.rm = TRUE))<br>
+<br>
+ggplot(yearly_trends, aes(x = month, y = total_cases, group = 1)) +<br>
+  geom_line() +<br>
+  geom_point() +<br>
+  facet_wrap(~year) +<br>
+  scale_x_continuous(breaks = c(1, 4, 7, 10)) +<br>
+  labs(<br>
+    title = "Monthly Malaria Cases by Year",<br>
+    x = "Month",<br>
+    y = "Total Cases"<br>
+  ) +<br>
+  theme_minimal()<br>
+<br>
+# Heatmap of cases by month and year<br>
+ggplot(yearly_trends, aes(x = month, y = factor(year), fill = total_cases)) +<br>
+  geom_tile() +<br>
+  scale_fill_gradient(low = "white", high = "red") +<br>
+  scale_x_continuous(breaks = 1:12) +<br>
+  labs(<br>
+    title = "Heatmap of Malaria Cases",<br>
+    x = "Month",<br>
+    y = "Year",<br>
+    fill = "Cases"<br>
+  ) +<br>
+  theme_minimal()
+                </code>
+            </div>
+            
+            <div class="explanation">
+                <h4>Explanation:</h4>
+                <p>- We create a proper date variable for time series analysis.<br>
+                - The first plot shows the seasonal pattern across all years.<br>
+                - The faceted plot shows yearly trends with separate panels.<br>
+                - The heatmap provides a color-coded view of cases by month and year.</p>
+            </div>
+            
+            <hr>
+            
+            <h3>Exercise 3.2: Spatial Comparison</h3>
+            <div class="r-code">
+                <code>
+# Bar chart of total cases by district<br>
+district_totals <- malaria_surveillance %>%<br>
+  group_by(district) %>%<br>
+  summarize(total_cases = sum(cases, na.rm = TRUE)) %>%<br>
+  arrange(desc(total_cases))<br>
+<br>
+ggplot(district_totals, aes(x = reorder(district, -total_cases), y = total_cases)) +<br>
+  geom_col(fill = "steelblue") +<br>
+  labs(<br>
+    title = "Total Malaria Cases by District",<br>
+    x = "District",<br>
+    y = "Total Cases"<br>
+  ) +<br>
+  theme_minimal() +<br>
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))<br>
+<br>
+# Boxplots comparing monthly cases across districts<br>
+ggplot(malaria_surveillance, aes(x = district, y = cases)) +<br>
+  geom_boxplot(fill = "lightgreen") +<br>
+  labs(<br>
+    title = "Distribution of Monthly Malaria Cases by District",<br>
+    x = "District",<br>
+    y = "Cases"<br>
+  ) +<br>
+  theme_minimal() +<br>
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))<br>
+<br>
+# Scatter plot of population vs. average cases<br>
+district_avg <- malaria_surveillance %>%<br>
+  group_by(district) %>%<br>
+  summarize(<br>
+    avg_cases = mean(cases, na.rm = TRUE),<br>
+    avg_population = mean(population, na.rm = TRUE)<br>
+  )<br>
+<br>
+ggplot(district_avg, aes(x = avg_population, y = avg_cases, color = district)) +<br>
+  geom_point(size = 3) +<br>
+  labs(<br>
+    title = "Average Cases vs. Population by District",<br>
+    x = "Average Population",<br>
+    y = "Average Cases"<br>
+  ) +<br>
+  theme_minimal()
+                </code>
+            </div>
+            
+            <div class="explanation">
+                <h4>Explanation:</h4>
+                <p>- The bar chart shows total cases by district in descending order.<br>
+                - Boxplots display the distribution of cases within each district.<br>
+                - The scatter plot reveals the relationship between population size and average cases.</p>
+            </div>
+            
+            <hr>
+            
+            <h3>Exercise 3.3: Relationship Visualization</h3>
+            <div class="r-code">
+                <code>
+# Scatter plot of cases vs deaths with trend line<br>
+ggplot(malaria_surveillance, aes(x = cases, y = deaths)) +<br>
+  geom_point(alpha = 0.5) +<br>
+  geom_smooth(method = "lm", color = "red") +<br>
+  labs(<br>
+    title = "Relationship Between Malaria Cases and Deaths",<br>
+    x = "Number of Cases",<br>
+    y = "Number of Deaths"<br>
+  ) +<br>
+  theme_minimal()<br>
+<br>
+# Bubble chart<br>
+ggplot(malaria_surveillance, aes(x = population, y = cases, size = deaths)) +<br>
+  geom_point(alpha = 0.6, color = "purple") +<br>
+  scale_size_continuous(range = c(1, 10)) +<br>
+  labs(<br>
+    title = "Malaria Cases by Population and Deaths",<br>
+    x = "Population",<br>
+    y = "Cases",<br>
+    size = "Deaths"<br>
+  ) +<br>
+  theme_minimal()<br>
+<br>
+# Correlation plot<br>
+library(corrplot)<br>
+numeric_vars <- malaria_surveillance[, c("cases", "deaths", "population")]<br>
+correlation_matrix <- cor(numeric_vars, use = "complete.obs")<br>
+corrplot(correlation_matrix, method = "circle")
+                </code>
+            </div>
+            
+            <div class="explanation">
+                <h4>Explanation:</h4>
+                <p>- The scatter plot with trend line shows the relationship between cases and deaths.<br>
+                - The bubble chart visualizes three variables: population, cases, and deaths.<br>
+                - The correlation plot shows the strength of relationships between all numeric variables.</p>
+            </div>
+        </div>
+        
+        <div class="solution-section">
+            <h2 id="sol-bonus3">4️⃣ Bonus Challenge: Dashboard Creation</h2>
+            
+            <div class="r-code">
+                <code>
+# This is sample code for creating a flexdashboard
+# Save this to an R Markdown file with YAML header:
+
+# ---
+# title: "Malaria Surveillance Dashboard"
+# output: 
+#   flexdashboard::flex_dashboard:
+#     orientation: rows
+#     social: menu
+#     source_code: embed
+# ---
+# 
+# ```{r setup, include=FALSE}
+# library(flexdashboard)
+# library(tidyverse)
+# library(plotly)
+# library(DT)
+# 
+# # Load data
+# malaria_surveillance <- read.csv("malaria_surveillance.csv")
+# ```
+# 
+# Overview
+# =====================================
+# 
+# Row {data-height=150}
+# -------------------------------------
+# 
+# ### Total Cases
+# ```{r}
+# valueBox(
+#   sum(malaria_surveillance$cases, na.rm = TRUE),
+#   icon = "fa-user-md",
+#   color = "primary"
+# )
+# ```
+# 
+# ### Total Deaths
+# ```{r}
+# valueBox(
+#   sum(malaria_surveillance$deaths, na.rm = TRUE),
+#   icon = "fa-heartbeat",
+#   color = "danger"
+# )
+# ```
+# 
+# ### Average Case Fatality Rate
+# ```{r}
+# cfr <- sum(malaria_surveillance$deaths, na.rm = TRUE) / 
+#       sum(malaria_surveillance$cases, na.rm = TRUE) * 100
+# 
+# valueBox(
+#   paste0(round(cfr, 2), "%"),
+#   icon = "fa-percent",
+#   color = "warning"
+# )
+# ```
+# 
+# Row
+# -------------------------------------
+# 
+# ### Malaria Cases Over Time
+# ```{r}
+# time_series <- malaria_surveillance %>%
+#   group_by(year, month) %>%
+#   summarize(total_cases = sum(cases, na.rm = TRUE)) %>%
+#   mutate(date = as.Date(paste(year, month, "01", sep = "-")))
+# 
+# plot_ly(time_series, x = ~date, y = ~total_cases, type = "scatter", mode = "lines+markers") %>%
+#   layout(title = "Malaria Cases Over Time",
+#          xaxis = list(title = "Date"),
+#          yaxis = list(title = "Total Cases"))
+# ```
+# 
+# Row
+# -------------------------------------
+# 
+# ### Cases by District
+# ```{r}
+# district_data <- malaria_surveillance %>%
+#   group_by(district) %>%
+#   summarize(total_cases = sum(cases, na.rm = TRUE)) %>%
+#   arrange(desc(total_cases))
+# 
+# plot_ly(district_data, x = ~reorder(district, total_cases), y = ~total_cases, type = "bar", marker = list(color = "steelblue")) %>%
+#   layout(title = "Total Cases by District",
+#          xaxis = list(title = "District"),
+#          yaxis = list(title = "Total Cases"))
+# ```
+# 
+# District Details
+# =====================================
+# 
+# ### District Comparison Table
+# ```{r}
+# district_summary <- malaria_surveillance %>%
+#   group_by(district) %>%
+#   summarize(
+#     total_cases = sum(cases, na.rm = TRUE),
+#     total_deaths = sum(deaths, na.rm = TRUE),
+#     avg_population = mean(population, na.rm = TRUE),
+#     cfr = round((total_deaths / total_cases * 100), 2),
+#     incidence_per_1000 = round((total_cases / avg_population * 1000), 2)
+#   ) %>%
+#   arrange(desc(total_cases))
+# 
+# datatable(district_summary, 
+#           options = list(pageLength = 10),
+#           rownames = FALSE)
+# ```
+# 
+# Temporal Patterns
+# =====================================
+# 
+# ### Monthly Pattern
+# ```{r}
+# monthly_pattern <- malaria_surveillance %>%
+#   group_by(month) %>%
+#   summarize(avg_cases = mean(cases, na.rm = TRUE)) %>%
+#   mutate(month_name = month.name[month])
+# 
+# plot_ly(monthly_pattern, x = ~month_name, y = ~avg_cases, type = "bar", marker = list(color = "darkgreen")) %>%
+#   layout(title = "Average Cases by Month",
+#          xaxis = list(title = "Month"),
+#          yaxis = list(title = "Average Cases"))
+# ```
+                </code>
+            </div>
+            
+            <div class="explanation">
+                <h4>Explanation:</h4>
+                <p>- This is a template for creating a flexdashboard in R Markdown.<br>
+                - The dashboard includes value boxes for key metrics, interactive time series plots, and comparative visualizations.<br>
+                - Multiple tabs allow for organizing different aspects of the data.<br>
+                - Interactive elements are created using plotly and DT packages.</p>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <h2>💡 What's Next?</h2>
+        <p>✔ After completing these exercises, you have learned how to explore, clean, and visualize malaria data effectively.<br>
+        ✔ In <strong>Week 4</strong>, we will explore advanced statistical modeling techniques for predicting malaria trends and identifying risk factors.</p>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
