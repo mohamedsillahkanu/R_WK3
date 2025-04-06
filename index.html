@@ -340,7 +340,7 @@ ggplot(region_avg, aes(x = region, y = avg_cases, fill = region)) +<br>
         
         <h3>Step 5: Time Series Line Plots</h3>
         <div class="r-code">
-            <code>
+            <pre><code>
 # Create a time series plot of malaria cases<br>
 ggplot(malaria_data, aes(x = date, y = cases)) +<br>
   geom_line(color = "darkred") +<br>
@@ -352,7 +352,7 @@ ggplot(malaria_data, aes(x = date, y = cases)) +<br>
   ) +<br>
   theme_minimal() +<br>
   scale_x_date(date_breaks = "1 month", date_labels = "%b %Y")
-            </code>
+            </code></pre>
         </div>
         
         <div class="explanation">
