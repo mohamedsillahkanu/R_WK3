@@ -81,16 +81,15 @@ print(summary_stats)
         <div class="r-code">
             <pre><code>
 # Load dplyr for data manipulation<br>
-library(dplyr)<br>
-<br>
+library(dplyr)
 # Calculate mean malaria cases by region<br>
 region_stats <- malaria_data %>%<br>
   group_by(region) %>%<br>
-  summarize(<br>
-    mean_cases = mean(cases, na.rm = TRUE),<br>
-    median_cases = median(cases, na.rm = TRUE),<br>
-    min_cases = min(cases, na.rm = TRUE),<br>
-    max_cases = max(cases, na.rm = TRUE)<br>
+  summarize(
+    mean_cases = mean(cases, na.rm = TRUE),
+    median_cases = median(cases, na.rm = TRUE),
+    min_cases = min(cases, na.rm = TRUE),
+    max_cases = max(cases, na.rm = TRUE)<
   )
             </code></pre>
         </div>
@@ -989,7 +988,7 @@ corrplot(correlation_matrix, method = "circle")
             <h2 id="sol-bonus3">4️⃣ Bonus Challenge: Dashboard Creation</h2>
             
             <div class="r-code">
-                <pre><code>
+                <code>
 # This is sample code for creating a flexdashboard
 # Save this to an R Markdown file with YAML header:
 
@@ -1090,7 +1089,7 @@ corrplot(correlation_matrix, method = "circle")
     </style>
 </head>
 <body>
-    <h1>Malaria Surveillance Dashboard Example</h1>
+    <h2>Malaria Surveillance Dashboard Example</h2>
     <p>Below is a complete example of an R Markdown file for creating an interactive dashboard to visualize malaria surveillance data using the flexdashboard package.</p>
     
     <div class="note">
@@ -1098,7 +1097,7 @@ corrplot(correlation_matrix, method = "circle")
     </div>
     
     <div class="dashboard-example">
-        <h2>Complete R Markdown Code</h2>
+        <h3>Complete R Markdown Code</h3>
         
         <div class="code-block"><span class="yaml"># This is sample code for creating a flexdashboard
 # Save this to an R Markdown file with YAML header:
@@ -1274,7 +1273,7 @@ plot_ly(monthly_pattern, x = ~month_name, y = ~avg_cases, type = "bar", marker =
     </div>
 </body>
 </html>
-                </code></pre>
+                </code>
             </div>
             
             <div class="explanation">
