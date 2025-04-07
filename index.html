@@ -583,10 +583,13 @@ interactive_plot
                 <code>
 # Load the dataset
 malaria_surveillance <- read.csv("malaria_surveillance.csv")
+    
 # Display the structure of the dataset
 str(malaria_surveillance)
+    
 # Calculate summary statistics for all numeric variables
 summary(malaria_surveillance[, c("cases", "deaths", "population")])
+    
 # Find the district with the highest number of cases
 max_cases_district <- malaria_surveillance[which.max(malaria_surveillance$cases), "district"]
 max_cases <- max(malaria_surveillance$cases, na.rm = TRUE)
