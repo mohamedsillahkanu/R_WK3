@@ -60,7 +60,7 @@
         <h3>Step 1: Basic Summary Statistics</h3>
         <div class="r-code">
             <pre><code>
-# Load our malaria dataset<br>
+# Load our malaria dataset
 malaria_data <- read.csv("malaria_dataset.csv")
 # Generate basic summary statistics
 summary_stats <- summary(malaria_data)
@@ -79,7 +79,7 @@ print(summary_stats)
         <h3>Step 2: Group-wise Statistics</h3>
         <div class="r-code">
             <pre><code>
-# Load dplyr for data manipulation<br>
+# Load dplyr for data manipulation
 library(dplyr)
 # Calculate mean malaria cases by region
 region_stats <- malaria_data %>%
@@ -108,7 +108,6 @@ region_stats <- malaria_data %>%
 # Create frequency table for severity levels
 severity_table <- table(malaria_data$severity)
 print(severity_table)
-<br>
 # Calculate proportion table
 severity_prop <- prop.table(severity_table) * 100
 print(severity_prop)
@@ -129,7 +128,6 @@ print(severity_prop)
 # Create cross-tabulation of region and severity
 region_severity_table <- table(malaria_data$region, malaria_data$severity)
 print(region_severity_table)
-<br>
 # Calculate chi-square test for association
 chisq_test <- chisq.test(region_severity_table)
 print(chisq_test)
@@ -151,8 +149,7 @@ print(chisq_test)
             <pre><code>
 # Check for missing values in the dataset
 missing_values <- colSums(is.na(malaria_data))
-print(missing_values)<br>
-<br>
+print(missing_values)
 # Calculate the percentage of missing values<br>
 missing_percentage <- colMeans(is.na(malaria_data)) * 100
 print(missing_percentage)
@@ -216,9 +213,8 @@ malaria_data_imputed <- malaria_data_imputed %>%
         <div class="r-code">
             <pre><code>
 # Install and load packages for missing data visualization
-install.packages("naniar")<br>
-library(naniar)<br>
-<br>
+install.packages("naniar")
+library(naniar)
 # Create a visualization of missing data patterns
 gg_miss_var(malaria_data)
 # Create a matrix of missing data patterns
@@ -241,7 +237,7 @@ vis_miss(malaria_data)
         <div class="r-code">
             <pre><code>
 # Install and load ggplot2
-install.packages("ggplot2"
+install.packages("ggplot2")
 library(ggplot2)
             </code></pre>
         </div>
@@ -285,7 +281,7 @@ ggplot(malaria_data, aes(x = cases)) +
 # Create boxplots of cases by region<br>
 ggplot(malaria_data, aes(x = region, y = cases, fill = region)) +
   geom_boxplot() +
-  labs(<br>
+  labs(
     title = "Malaria Cases by Region",
     x = "Region",
     y = "Number of Cases"
@@ -338,7 +334,7 @@ ggplot(region_avg, aes(x = region, y = avg_cases, fill = region)) +
 ggplot(malaria_data, aes(x = date, y = cases)) +
   geom_line(color = "darkred") +
   geom_point(color = "darkred") +
-  labs(<br>
+  labs(
     title = "Malaria Cases Over Time",
     x = "Date",
     y = "Number of Cases"
@@ -365,7 +361,7 @@ ggplot(malaria_data, aes(x = date, y = cases)) +
   geom_line() +
   geom_point() +
   facet_wrap(~region, scales = "free_y") +
-  labs(<br>
+  labs(
     title = "Malaria Cases Over Time by Region",
     x = "Date",
     y = "Number of Cases"
