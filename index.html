@@ -594,6 +594,7 @@ summary(malaria_surveillance[, c("cases", "deaths", "population")])
 max_cases_district <- malaria_surveillance[which.max(malaria_surveillance$cases), "district"]
 max_cases <- max(malaria_surveillance$cases, na.rm = TRUE)
 cat("District with highest cases:", max_cases_district, "with", max_cases, "cases\n")
+    
 # Calculate the case fatality rate for each district
 library(dplyr)
 cfr_by_district <- malaria_surveillance %>%
@@ -627,6 +628,7 @@ avg_cases_by_district_year <- malaria_surveillance %>%
   summarize(avg_cases = mean(cases, na.rm = TRUE)) %>%
   arrange(district, year)
 print(avg_cases_by_district_year)
+    
 # Identify the year with highest total cases
 yearly_totals <- malaria_surveillance %>%
   group_by(year) %>%
@@ -634,6 +636,7 @@ yearly_totals <- malaria_surveillance %>%
   arrange(desc(total_cases))
 cat("Year with highest total cases:", yearly_totals$year[1], 
     "with", yearly_totals$total_cases[1], "cases\n")
+    
 # Calculate incidence rate per 1000 population
 incidence_by_district_year <- malaria_surveillance %>%
   group_by(district, year) %>%
@@ -643,6 +646,7 @@ incidence_by_district_year <- malaria_surveillance %>%
     incidence_per_1000 = (total_cases / avg_population) * 1000
   ) %>%
   arrange(desc(incidence_per_1000))
+    
 # Top 5 district-year combinations with highest incidence
 top_5_incidence <- head(incidence_by_district_year, 5)
 print(top_5_incidence)
@@ -665,6 +669,7 @@ print(top_5_incidence)
 # ANOVA to test for difference in mean cases between districts
 cases_anova <- aov(cases ~ district, data = malaria_surveillance)
 summary(cases_anova)
+    
 # T-test to compare cases between two specific districts
 district_a <- "Central"  # Replace with actual district name
 district_b <- "Eastern"  # Replace with actual district name
@@ -673,6 +678,7 @@ t_test_result <- t.test(<br>
   malaria_surveillance$cases[malaria_surveillance$district == district_b]
 )
 print(t_test_result)
+    
 # Check correlation between population size and number of cases
 correlation <- cor.test(
   malaria_surveillance$population,
@@ -700,9 +706,11 @@ print(correlation)
 # Count missing values in each column
 missing_count <- colSums(is.na(malaria_surveillance))
 print(missing_count)
+    
 # Calculate percentage of missing values
 missing_percentage <- colMeans(is.na(malaria_surveillance)) * 100
 print(missing_percentage)
+    
 # Identify districts with most missing values
 missing_by_district <- malaria_surveillance %>%
   group_by(district) %>%
@@ -766,10 +774,11 @@ table(imputed_deaths$deaths_imputed)
                 <pre><code>
 # Visualize proportion of missing values by column
 library(naniar)  # Install if needed: install.packages("naniar")
-<br>
 gg_miss_var(malaria_surveillance)
+                    
 # Visualize missing values by district
 gg_miss_var(malaria_surveillance, facet = district)
+                    
 # Create a heatmap of missing values
 vis_miss(malaria_surveillance)
                 </code></pre>
@@ -789,13 +798,14 @@ vis_miss(malaria_surveillance)
             <h3>Exercise 3.1: Temporal Trends</h3>
             <div class="r-code">
                 <pre><code>
-library(ggplot2)<br>
-library(lubridate)<br>
-<br>
+# Load the packages
+library(ggplot2)
+library(lubridate)
+                    
 # Create a date variable for proper time series plotting
 malaria_surveillance <- malaria_surveillance %>%
   mutate(date = make_date(year, month, 1))
-<br>
+
 # Line plot showing total cases per month across all years
 monthly_cases <- malaria_surveillance %>%
   group_by(month) %>%
@@ -810,6 +820,7 @@ ggplot(monthly_cases, aes(x = month, y = total_cases, group = 1)) +
     y = "Total Cases"
   ) +
   theme_minimal()
+    
 # Faceted plot showing yearly trends
 yearly_trends <- malaria_surveillance %>%
   group_by(year, month) %>%
@@ -825,12 +836,13 @@ ggplot(yearly_trends, aes(x = month, y = total_cases, group = 1)) +
     y = "Total Cases"
   ) +
   theme_minimal()
+    
 # Heatmap of cases by month and year
 ggplot(yearly_trends, aes(x = month, y = factor(year), fill = total_cases)) +
   geom_tile() +
   scale_fill_gradient(low = "white", high = "red") +
   scale_x_continuous(breaks = 1:12) +
-  labs(<br>
+  labs(
     title = "Heatmap of Malaria Cases",
     x = "Month",
     y = "Year",
@@ -858,7 +870,6 @@ district_totals <- malaria_surveillance %>%
   group_by(district) %>
   summarize(total_cases = sum(cases, na.rm = TRUE)) %>%
   arrange(desc(total_cases))
-<br>
 ggplot(district_totals, aes(x = reorder(district, -total_cases), y = total_cases)) +
   geom_col(fill = "steelblue") +
   labs(
@@ -868,6 +879,7 @@ ggplot(district_totals, aes(x = reorder(district, -total_cases), y = total_cases
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    
 # Boxplots comparing monthly cases across districts
 ggplot(malaria_surveillance, aes(x = district, y = cases)) +
   geom_boxplot(fill = "lightgreen") +
@@ -878,6 +890,7 @@ ggplot(malaria_surveillance, aes(x = district, y = cases)) +
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    
 # Scatter plot of population vs. average cases
 district_avg <- malaria_surveillance %>%
   group_by(district) %>%
@@ -918,7 +931,7 @@ ggplot(malaria_surveillance, aes(x = cases, y = deaths)) +
     y = "Number of Deaths"
   ) +
   theme_minimal()
-<br>
+                   
 # Bubble chart<br>
 ggplot(malaria_surveillance, aes(x = population, y = cases, size = deaths)) +
   geom_point(alpha = 0.6, color = "purple") +
@@ -930,6 +943,7 @@ ggplot(malaria_surveillance, aes(x = population, y = cases, size = deaths)) +
     size = "Deaths"
   ) +
   theme_minimal()
+                    
 # Correlation plot
 library(corrplot)
 numeric_vars <- malaria_surveillance[, c("cases", "deaths", "population")]
